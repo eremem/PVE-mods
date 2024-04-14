@@ -80,6 +80,9 @@ function install_packages {
 
 function configure {
 	local sensorOutput=$(sensors -j)
+	if [ $? -ne 0 ]; then
+		err "Sensor output error.\n\nCommand output:\n${sensorOutput}\n\nExiting...\n"
+	fi
 
 	# Check if HDD/SSD data is installed
 	msg "\nDetecting support for HDD/SDD temperature sensors..."
@@ -481,3 +484,4 @@ done
 if [[ $executed -eq 0 ]]; then
 	usage
 fi
+
