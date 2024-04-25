@@ -79,17 +79,17 @@ function install_packages {
 }
 
 function configure {
-	local sensorOutput=$(sensors -j)
+	local sensorsOutput=$(sensors -j)
 	if [ $? -ne 0 ]; then
-		err "Sensor output error.\n\nCommand output:\n${sensorOutput}\n\nExiting...\n"
+		err "Sensor output error.\n\nCommand output:\n${sensorsOutput}\n\nExiting...\n"
 	fi
 
 	# Check if HDD/SSD data is installed
 	msg "\nDetecting support for HDD/SDD temperature sensors..."
 	if (lsmod | grep -wq "drivetemp"); then
 		# Check if SDD/HDD data is available
-		if (echo "$sensorOutput" | grep -q "drivetemp-scsi-" ); then
-			msg "Detected sensors:\n$(echo "$sensorOutput" | grep -o '"drivetemp-scsi[^"]*"' | sed 's/"//g')"
+		if (echo "$sensorsOutput" | grep -q "drivetemp-scsi-" ); then
+			msg "Detected sensors:\n$(echo "$sensorsOutput" | grep -o '"drivetemp-scsi[^"]*"' | sed 's/"//g')"
 			enableHddTemp=true
 		else
 			warn "Kernel module \"drivetemp\" is not installed. HDD/SDD temperatures will not be available."
@@ -101,8 +101,8 @@ function configure {
 
 	# Check if NVMe data is available
 	msg "\nDetecting support for NVMe temperature sensors..."
-	if (echo "$sensorOutput" | grep -q "nvme-" ); then
-		msg "Detected sensors:\n$(echo "$sensorOutput" | grep -o '"nvme[^"]*"' | sed 's/"//g')"
+	if (echo "$sensorsOutput" | grep -q "nvme-" ); then
+		msg "Detected sensors:\n$(echo "$sensorsOutput" | grep -o '"nvme[^"]*"' | sed 's/"//g')"
 		enableNvmeTemp=true
 	else
 		warn "No NVMe temperature sensors found."
@@ -112,16 +112,16 @@ function configure {
 	# Check if CPU is part of known list for autoconfiguration
 	msg "\nDetecting support for CPU temperature sensors..."
 	for item in "${KNOWN_CPU_SENSORS[@]}"; do
-		if (echo "$sensorOutput" | grep -q "$item"); then
+		if (echo "$sensorsOutput" | grep -q "$item"); then
 			case "$item" in
 				"coretemp-"*)
-					CPU_ADDRESS="$(echo "$sensorOutput" | grep "$item" | sed 's/"//g;s/:{//;s/^\s*//')"
+					CPU_ADDRESS="$(echo "$sensorsOutput" | grep "$item" | sed 's/"//g;s/:{//;s/^\s*//')"
 					CPU_ITEM_PREFIX="Core "
 					CPU_TEMP_CAPTION="Core"
 					break
 					;;
 				"k10temp-"*)
-					CPU_ADDRESS="$(echo "$sensorOutput" | grep "$item" | sed 's/"//g;s/:{//;s/^\s*//')"
+					CPU_ADDRESS="$(echo "$sensorsOutput" | grep "$item" | sed 's/"//g;s/:{//;s/^\s*//')"
 					CPU_ITEM_PREFIX="Tccd"
 					CPU_TEMP_CAPTION="Temp"
 					break
@@ -145,7 +145,7 @@ function configure {
 		read -rsp $'Sensor output will be presented. Press any key to continue...\n' -n1 key
 
 		# Print the output to the user
-		msg "Sensor output:\n${sensorOutput}"
+		msg "Sensor output:\n${sensorsOutput}"
 
 		# Prompt the user for adapter name and item name
 		read -p "Enter the CPU sensor address (e.g.: coretemp-isa-0000 or k10temp-pci-00c3): " CPU_ADDRESS
