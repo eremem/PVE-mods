@@ -173,15 +173,15 @@ function install_mod {
 	local timestamp=$(date '+%Y-%m-%d_%H-%M-%S')
 
 	# Add new line to Nodes.pm file
-	if [[ -z $(cat $nodespm | grep -e "$res->{thermalstate}") ]]; then
+	if [[ -z $(cat $nodespm | grep -e "$res->{sensorsOutput}") ]]; then
 		# Create backup of original file
 		cp "$nodespm" "$BACKUP_DIR/Nodes.pm.$timestamp"
 		msg "Backup of \"$nodespm\" saved to \"$BACKUP_DIR/Nodes.pm.$timestamp\"."
 
-		sed -i '/my $dinfo = df('\''\/'\'', 1);/i\'$'\t''$res->{thermalstate} = `sensors -j`;\n' "$nodespm"
-		msg "Added thermalstate to $nodespm."
+		sed -i '/my $dinfo = df('\''\/'\'', 1);/i\'$'\t''$res->{sensorsOutput} = `sensors -j`;\n' "$nodespm"
+		msg "Added sensors' output to $nodespm."
 	else
-		warn "Thermalstate already added to \"$nodespm\"."
+		warn "Sensors' output already exists in \"$nodespm\"."
 	fi
 
 	# Add new item to the items array in PVE.node.StatusView
@@ -211,7 +211,7 @@ function install_mod {
 		printBar: false,\n\
 		title: gettext('CPU Thermal State'),\n\
 		iconCls: 'fa fa-fw fa-thermometer-half',\n\
-		textField: 'thermalstate',\n\
+		textField: 'sensorsOutput',\n\
 		renderer: function(value){\n\
 			// sensors configuration\n\
 			const cpuAddress = \"$CPU_ADDRESS\";\n\
@@ -268,7 +268,7 @@ function install_mod {
 		printBar: false,\n\
 		title: gettext('HDD/SSD Thermal State'),\n\
 		iconCls: 'fa fa-fw fa-thermometer-half',\n\
-		textField: 'thermalstate',\n\
+		textField: 'sensorsOutput',\n\
 		renderer: function(value) {\n\
 			// sensors configuration\n\
 			const addressPrefix = \"drivetemp-scsi-\";\n\
@@ -310,7 +310,7 @@ function install_mod {
 		printBar: false,\n\
 		title: gettext('NVMe Thermal State'),\n\
 		iconCls: 'fa fa-fw fa-thermometer-half',\n\
-		textField: 'thermalstate',\n\
+		textField: 'sensorsOutput',\n\
 		renderer: function(value) {\n\
 			// sensors configuration\n\
 			const addressPrefix = \"nvme-pci-\";\n\
