@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# This bash script installs a modification to the Proxmox Virtual Environment (PVE) web user interface (UI) to display temperature information.
+# This bash script installs a modification to the Proxmox Virtual Environment (PVE) web user interface (UI) to display sensors information.
 #
 
 ################### Configuration #############
@@ -179,9 +179,9 @@ function install_mod {
 		msg "Backup of \"$nodespm\" saved to \"$BACKUP_DIR/Nodes.pm.$timestamp\"."
 
 		sed -i '/my $dinfo = df('\''\/'\'', 1);/i\'$'\t''$res->{sensorsOutput} = `sensors -j`;\n' "$nodespm"
-		msg "Added sensors' output to $nodespm."
+		msg "Sensors' output added to \"$nodespm\"."
 	else
-		warn "Sensors' output already exists in \"$nodespm\"."
+		warn "Sensors' output already integrated in in \"$nodespm\"."
 	fi
 
 	# Add new item to the items array in PVE.node.StatusView
@@ -412,13 +412,13 @@ function install_mod {
 			s/nodeStatus/\/\/nodeStatus/
 		}" "$pvemanagerlibjs"
 
-		msg "New temperature display items added to the summary panel in \"$pvemanagerlibjs\"."
+		msg "Sensor display items added to the summary panel in \"$pvemanagerlibjs\"."
 
 		restart_proxy
 
 		msg "Installation completed"
 	else
-		warn "New temperature display items already added to the summary panel in \"$pvemanagerlibjs\"."
+		warn "Sensor display items already added to the summary panel in \"$pvemanagerlibjs\"."
 	fi
 }
 
@@ -465,14 +465,14 @@ while [[ $# -gt 0 ]]; do
 	case "$1" in
 		install)
 			executed=$(($executed + 1))
-			msgb "\nInstalling the Proxmox VE temperatures display mod..."
+			msgb "\nInstalling the Proxmox VE sensors display mod..."
 			install_packages
 			install_mod
 			echo # add a new line
 			;;
 		uninstall)
 			executed=$(($executed + 1))
-			msgb "\nUninstalling the Proxmox VE temperatures display mod..."
+			msgb "\nUninstalling the Proxmox VE sensors display mod..."
 			uninstall_mod
 			echo # add a new line
 			;;
