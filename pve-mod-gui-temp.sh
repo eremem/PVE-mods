@@ -387,7 +387,6 @@ function install_mod {
 		textField: 'sensorsOutput',\n\
 		renderer: function(value) {\n\
 			const objValue = JSON.parse(value);\n\
-\n\
 			let speeds = [];\n\
 \n\
 			// Loop through the parent keys\n\
