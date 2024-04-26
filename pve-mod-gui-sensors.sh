@@ -7,6 +7,7 @@
 
 # Display configuration for HDD, NVME, CPU
 # Set to 0 to disable line breaks
+# Note: use these settings only if the displayed layout is broken
 CPU_ITEMS_PER_ROW=0;
 NVME_ITEMS_PER_ROW=0;
 HDD_ITEMS_PER_ROW=0;
