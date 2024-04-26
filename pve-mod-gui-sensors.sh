@@ -232,30 +232,44 @@ function install_mod {
 			const itemsPerRow = $CPU_ITEMS_PER_ROW;\n\
 			// ---\n\
 			const objValue = JSON.parse(value);\n\
-			if(objValue.hasOwnProperty(cpuAddress)) {\n\
-				const items = objValue[cpuAddress],\n\
-					itemKeys = Object.keys(items).filter(item => { return String(item).startsWith(cpuItemPrefix); });\n\
+			if (objValue.hasOwnProperty(cpuAddress)) {\n\
+				const items = objValue[cpuAddress];\n\
+				const itemKeys = Object.keys(items).filter(item => { return String(item).startsWith(cpuItemPrefix); });\n\
 				let temps = [];\n\
 				itemKeys.forEach((coreKey) => {\n\
 					try {\n\
+						let tempVal = NaN, tempMax = NaN, tempCrit = NaN;\n\
 						Object.keys(items[coreKey]).forEach((secondLevelKey) => {\n\
-							if (secondLevelKey.includes('_input')) {\n\
-								let tempStr = '';\n\
-								let temp = items[coreKey][secondLevelKey];\n\
-								let index = coreKey.match(/\\\S+\\\s*(\\\d+)/);\n\
-								if(index !== null && index.length > 1) {\n\
-									index = index[1];\n\
-									tempStr = \`\${cpuTempCaption}&nbsp;\${index}:&nbsp;\${temp}&deg;C\`;\n\
-								}\n\
-								else {\n\
-									tempStr = \`\${cpuTempCaption}:&nbsp;\${temp}&deg;C\`;\n\
-								}\n\
-								temps.push(tempStr);\n\
+							if (secondLevelKey.endsWith('_input')) {\n\
+								tempVal = parseFloat(items[coreKey][secondLevelKey]);\n\
+							} else if (secondLevelKey.endsWith('_max')) {\n\
+								tempMax = parseFloat(items[coreKey][secondLevelKey]);\n\
+							} else if (secondLevelKey.endsWith('_crit')) {\n\
+								tempCrit = parseFloat(items[coreKey][secondLevelKey]);\n\
 							}\n\
-						})\n\
-					} catch(e) { /*_*/ }\n\
+						});\n\
+						if (!isNaN(tempVal)) {\n\
+							let tempStyle = '';\n\
+							if (!isNaN(tempMax) && tempVal > tempMax) {\n\
+								tempStyle = 'color: #FFC300; font-weight: bold;';\n\
+							}\n\
+							if (!isNaN(tempCrit) && tempVal > tempCrit) {\n\
+								tempStyle = 'color: red; font-weight: bold;';\n\
+							}\n\
+							let tempStr = '';\n\
+							let tempIndex = coreKey.match(/\\\S+\\\s*(\\\d+)/);\n\
+							if (tempIndex !== null && tempIndex.length > 1) {\n\
+								tempIndex = tempIndex[1];\n\
+								tempStr = \`\${cpuTempCaption}&nbsp;\${tempIndex}:&nbsp;<span style=\"\${tempStyle}\">\${tempVal}&deg;C</span>\`;\n\
+							} else {\n\
+								tempStr = \`\${cpuTempCaption}:&nbsp;\${tempVal}&deg;C\`;\n\
+							}\n\
+							temps.push(tempStr);\n\
+						}\n\
+					} catch (e) { /*_*/\n\
+					}\n\
 				});\n\
-				const result = temps.map((strTemp, index, arr) => { return strTemp + (index + 1 < arr.length ? (itemsPerRow > 0 && (index + 1) % itemsPerRow === 0 ? '<br>' : '&nbsp;| ') : '')});\n\
+				const result = temps.map((strTemp, index, arr) => { return strTemp + (index + 1 < arr.length ? (itemsPerRow > 0 && (index + 1) % itemsPerRow === 0 ? '<br>' : '&nbsp;| ') : ''); });\n\
 				return '<div style=\"text-align: left; margin-left: 28px;\">' + (result.length > 0 ? result.join('') : 'N/A') + '</div>';\n\
 			}\n\
 		}\n\
