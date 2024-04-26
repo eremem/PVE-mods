@@ -306,12 +306,27 @@ function install_mod {
 			let temps = [];\n\
 			drvKeys.forEach((drvKey, index) => {\n\
 				try {\n\
+					let tempVal = NaN, tempMax = NaN, tempCrit = NaN;\n\
 					Object.keys(objValue[drvKey][sensorName]).forEach((secondLevelKey) => {\n\
-						if (secondLevelKey.includes('_input')) {\n\
-							let temp = objValue[drvKey][sensorName][secondLevelKey];\n\
-							temps.push(\`Drive&nbsp;\${index + 1}:&nbsp;\${temp}&deg;C\`);\n\
+						if (secondLevelKey.endsWith('_input')) {\n\
+							tempVal = parseFloat(objValue[drvKey][sensorName][secondLevelKey]);\n\
+						} else if (secondLevelKey.endsWith('_max')) {\n\
+							tempMax = parseFloat(objValue[drvKey][sensorName][secondLevelKey]);\n\
+						} else if (secondLevelKey.endsWith('_crit')) {\n\
+							tempCrit = parseFloat(objValue[drvKey][sensorName][secondLevelKey]);\n\
 						}\n\
-					})\n\
+					});\n\
+					if (!isNaN(tempVal)) {\n\
+						let tempStyle = '';\n\
+						if (!isNaN(tempMax) && tempVal > tempMax) {\n\
+							tempStyle = 'color: #FFC300; font-weight: bold;';\n\
+						}\n\
+						if (!isNaN(tempCrit) && tempVal > tempCrit) {\n\
+							tempStyle = 'color: red; font-weight: bold;';\n\
+						}\n\
+						const tempStr = \`Drive&nbsp;\${index + 1}:&nbsp;<span style=\"\${tempStyle}\">\${tempVal}&deg;C</span>\`;\n\
+						temps.push(tempStr);\n\
+					}\n\
 				} catch(e) { /*_*/ }\n\
 			});\n\
 			const result = temps.map((strTemp, index, arr) => { return strTemp + (index + 1 < arr.length ? ((index + 1) % itemsPerRow === 0 ? '<br>' : '&nbsp;| ') : ''); });\n\
@@ -348,12 +363,27 @@ function install_mod {
 			let temps = [];\n\
 			nvmeKeys.forEach((nvmeKey, index) => {\n\
 				try {\n\
+					let tempVal = NaN, tempMax = NaN, tempCrit = NaN;\n\
 					Object.keys(objValue[nvmeKey][sensorName]).forEach((secondLevelKey) => {\n\
-						if (secondLevelKey.includes('_input')) {\n\
-							let temp = objValue[nvmeKey][sensorName][secondLevelKey];\n\
-							temps.push(\`Drive&nbsp;\${index + 1}:&nbsp;\${temp}&deg;C\`);\n\
+						if (secondLevelKey.endsWith('_input')) {\n\
+							tempVal = parseFloat(objValue[nvmeKey][sensorName][secondLevelKey]);\n\
+						} else if (secondLevelKey.endsWith('_max')) {\n\
+							tempMax = parseFloat(objValue[nvmeKey][sensorName][secondLevelKey]);\n\
+						} else if (secondLevelKey.endsWith('_crit')) {\n\
+							tempCrit = parseFloat(objValue[nvmeKey][sensorName][secondLevelKey]);\n\
 						}\n\
-					})\n\
+					});\n\
+					if (!isNaN(tempVal)) {\n\
+						let tempStyle = '';\n\
+						if (!isNaN(tempMax) && tempVal > tempMax) {\n\
+							tempStyle = 'color: #FFC300; font-weight: bold;';\n\
+						}\n\
+						if (!isNaN(tempCrit) && tempVal > tempCrit) {\n\
+							tempStyle = 'color: red; font-weight: bold;';\n\
+						}\n\
+						const tempStr = \`Drive&nbsp;\${index + 1}:&nbsp;<span style=\"\${tempStyle}\">\${tempVal}&deg;C</span>\`;\n\
+						temps.push(tempStr);\n\
+					}\n\
 				} catch(e) { /*_*/ }\n\
 			});\n\
 			const result = temps.map((strTemp, index, arr) => { return strTemp + (index + 1 < arr.length ? ((index + 1) % itemsPerRow === 0 ? '<br>' : '&nbsp;| ') : ''); });\n\
